@@ -20,7 +20,7 @@ class Backend:
             self._type = 'numpy'
         else:
             # 代码健壮性这一块还是要的
-            raise NotImplementedError('Backend {} not implemented'.format(backend))
+            raise NotImplementedError(f'Backend {backend} not implemented')
 
     def __getattr__(self, name):
         return getattr(self._backend, name) # 把对应的调用送到指定后端
