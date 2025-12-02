@@ -2,6 +2,8 @@ from backend import set_backend, xp
 from dataset import LibSVMDataset, DataLoader
 from model.lasso import LASSO
 from algorithm.pg import ProximalGradient
+from scheduler.StepLR import StepLR
+from scheduler.CosineAnnealingLR import CosineAnnealingLR
 
 
 set_backend('numpy')
@@ -11,12 +13,14 @@ dataloader = DataLoader(dataset)
 
 feature_dim = dataset.X.shape[1]
 
-lr = 1e-3
+lr = 1e-4
 lam = 1e-3
-epochs = 10000
+epochs = 1000
 
 model = LASSO(feature_dim, lam)
 optimizer = ProximalGradient(model, lr, lam)
+#scheduler = StepLR(optimizer, step_size=50, gamma=0.5)
+scheduler = CosineAnnealingLR(optimizer, T_max=epochs, eta_min=1e-5)
 
 for epoch in range(1, epochs + 1):
     total_loss = 0
@@ -25,6 +29,8 @@ for epoch in range(1, epochs + 1):
 
         total_loss += loss
         optimizer.step(X, y)
+    scheduler.step()
     avg_loss = total_loss / len(dataloader)
-    print(f"Epoch {epoch:03d} | loss = {avg_loss:.6f}")
+    print(f"Epoch {epoch:03d} | loss = {avg_loss:.6f}, lr = {scheduler.get_lr()}")
+
 print(model.weight.data)
