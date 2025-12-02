@@ -22,8 +22,8 @@ class LibSVMDataset(Dataset):
         X, y = load_svmlight_file(path)
 
         # 不整什么fp16加速的烂活了，还要梯度放缩啥的，麻烦死了
-        X_np = X.toarray().astype(np.float64, copy=False)
-        y_np = y.astype(np.float64, copy=False)
+        X_np = X.toarray().astype(np.float32, copy=False)
+        y_np = y.astype(np.float32, copy=False)
 
         # 转换成对应后端array
         self.X = xp.asarray(X_np)
