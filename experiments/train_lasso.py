@@ -2,6 +2,7 @@ from backend import set_backend, xp
 from dataset import LibSVMDataset, DataLoader
 from model.lasso import LASSO
 from algorithm.pg import ProximalGradient
+from algorithm.nesterov_pg import NesterovProximalGradient
 from scheduler.StepLR import StepLR
 from scheduler.CosineAnnealingLR import CosineAnnealingLR
 
@@ -18,7 +19,7 @@ lam = 1e-3
 epochs = 1000
 
 model = LASSO(feature_dim, lam)
-optimizer = ProximalGradient(model, lr, lam)
+optimizer = NesterovProximalGradient(model, lr, lam)
 #scheduler = StepLR(optimizer, step_size=50, gamma=0.5)
 scheduler = CosineAnnealingLR(optimizer, T_max=epochs, eta_min=1e-5)
 
