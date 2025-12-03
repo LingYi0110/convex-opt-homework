@@ -16,4 +16,5 @@ class ProximalGradient(Optimizer):
 
 def prox_l1(v, lam):
     # 推导看报告吧，这里不写了
+    # for循环对每个分量操作太慢了，不如下面
     return xp.sign(v) * xp.maximum(xp.abs(v) - lam, 0)

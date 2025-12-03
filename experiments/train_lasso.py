@@ -5,7 +5,7 @@ from algorithm.pg import ProximalGradient
 from algorithm.nesterov_pg import NesterovProximalGradient
 from scheduler.StepLR import StepLR
 from scheduler.CosineAnnealingLR import CosineAnnealingLR
-
+from algorithm.gd import GradientDescent
 
 set_backend('numpy')
 
@@ -15,11 +15,12 @@ dataloader = DataLoader(dataset)
 feature_dim = dataset.X.shape[1]
 
 lr = 1e-4
-lam = 1e-3
+lam = 1e-1
 epochs = 1000
 
-model = LASSO(feature_dim, lam)
-optimizer = NesterovProximalGradient(model, lr, lam)
+model = LASSO(feature_dim, lam, sub_grad='random')
+#optimizer = NesterovProximalGradient(model, lr, lam)
+optimizer = GradientDescent(model, lr)
 #scheduler = StepLR(optimizer, step_size=50, gamma=0.5)
 scheduler = CosineAnnealingLR(optimizer, T_max=epochs, eta_min=1e-5)
 
