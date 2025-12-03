@@ -15,25 +15,24 @@ class Dataset:
 
 
 class LibSVMDataset(Dataset):
-    def __init__(self, path: str):
+    def __init__(self, path: str, dtype = np.float64):
         if not os.path.exists(path):
             raise FileNotFoundError(f'File {path} not found')
 
         X, y = load_svmlight_file(path)
 
         # 不整什么fp16加速的烂活了，还要梯度放缩啥的，麻烦死了
-        X_np = X.toarray().astype(np.float32, copy=False)
-        y_np = y.astype(np.float32, copy=False)
-
-        # 转换成对应后端array
-        self.X = xp.asarray(X_np)
-        self.y = xp.asarray(y_np)
+        self.X = X.astype(dtype, copy=False)
+        self.y = y.astype(dtype, copy=False)
 
     def __len__(self) -> int:
         return self.X.shape[0]
 
     def __getitem__(self, index: int) -> Any:
-        return self.X[index], self.y[index]
+        row = self.X.getrow(index)
+        X_xp = xp.asarray(row.toarray().ravel()) # 被log1p.E2006这个数据集坑了，全用稠密矩阵内存直接爆炸
+        y_xp = xp.asarray(self.y[index])
+        return X_xp, y_xp
 
 class DataLoader:
     def __init__(self, dataset: Dataset, batch_size: Optional[int] = None):
@@ -53,12 +52,11 @@ class DataLoader:
 
         for start in range(0, num, self.batch_size):
             end = min(start + self.batch_size, num) # 防止数据不够一个batch
-            data_indexes = range(0, num)
 
             X_list = []
             y_list = []
             # 切片每一个batch的元素
-            for i in data_indexes[start:end]:
+            for i in range(start, end):
                 X, y = self.dataset[i]
                 X_list.append(X)
                 y_list.append(y)

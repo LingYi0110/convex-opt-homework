@@ -29,7 +29,7 @@ class LASSO(BaseModel):
         elif self.sub_grad == 'random':
             g = xp.sign(self.weight.data)
             zero = (self.weight.data == 0)
-            g[zero] = xp.random.uniform(-1.0, 1.0, size=zero.sum())
+            g[zero] = xp.random.uniform(-1.0, 1.0, size=zero.sum().item())
             return self.lam_l1 * g
         else:
             raise NotImplementedError(f'Not Supported SubGradient Mode:{self.sub_grad}')
