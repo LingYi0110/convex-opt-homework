@@ -1,6 +1,6 @@
 from algorithm.base import Optimizer
 from backend import xp
-
+from utils import prox_l1
 
 class NesterovProximalGradient(Optimizer):
     def __init__(self, model, lr, lam):
@@ -23,5 +23,4 @@ class NesterovProximalGradient(Optimizer):
         self.k += 1
 
 
-def prox_l1(v, lam):
-    return xp.sign(v) * xp.maximum(xp.abs(v) - lam, 0)
+

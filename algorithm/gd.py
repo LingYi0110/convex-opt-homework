@@ -1,7 +1,7 @@
 from algorithm.base import Optimizer
 
 
-class StochasticGradientDescent(Optimizer):
+class GradientDescent(Optimizer):
     def __init__(self, model, lr):
         super().__init__(model, lr)
 

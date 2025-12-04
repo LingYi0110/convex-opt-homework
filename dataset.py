@@ -28,6 +28,11 @@ class LibSVMDataset(Dataset):
         else:
             self.X = X_sparse.astype(dtype)
 
+        # 对于分类问题，有的数据集标签不是-1, +1, 这里统一改成-1, +1
+        unique = np.unique(y)
+        if len(unique) == 2:
+            y = np.where(y == unique.max(), 1.0, -1.0)
+
         self.y = xp.asarray(y.astype(dtype, copy=False))
 
     def __len__(self) -> int:

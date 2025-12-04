@@ -3,11 +3,11 @@ from utils import *
 from backend import xp
 
 class LASSO(BaseModel):
-    def __init__(self, input_dim: int, lam: float, sub_grad: str = 'off'):
+    def __init__(self, input_dim: int, lam: float, subgrad: str = 'off'):
         super().__init__()
-        self.weight = Parameter(xp.zeros(input_dim))
+        self.weight = Parameter(xp.random.randn(input_dim) * 0.01)
         self.lam_l1 = lam
-        self.sub_grad = sub_grad
+        self.subgrad = subgrad
 
     def forward(self, X):
         return X @ self.weight.data
@@ -21,20 +21,7 @@ class LASSO(BaseModel):
         g = self.lam_l1 * l1_norm(self.weight.data)
         return f + g
 
-    def l1_subgrad(self):
-        if self.sub_grad == 'off':
-            return xp.zeros_like(self.weight.data)
-        elif self.sub_grad == 'zero':
-            return self.lam_l1 * xp.sign(self.weight.data)
-        elif self.sub_grad == 'random':
-            g = xp.sign(self.weight.data)
-            zero = (self.weight.data == 0)
-            g[zero] = xp.random.uniform(-1.0, 1.0, size=zero.sum().item())
-            return self.lam_l1 * g
-        else:
-            raise NotImplementedError(f'Not Supported SubGradient Mode:{self.sub_grad}')
-
     def grad(self, X, y):
         # 没有自动求导 :(
         residual = self.forward(X) - y
-        self.weight.grad = X.T @ residual + self.l1_subgrad()
+        self.weight.grad = X.T @ residual + self.lam_l1 * l1_subgrad(self.weight.data, self.subgrad)

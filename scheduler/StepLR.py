@@ -9,7 +9,7 @@ class StepLR(Scheduler):
 
     def step(self):
         #每step_size次就会衰减一次
-        if self.last_epoch % self.step_size == 0:
+        if self.last_epoch % self.step_size == 0 and self.last_epoch != 0:
             self.optimizer.lr *= self.gamma
 
         # 调用次数自增
