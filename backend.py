@@ -22,6 +22,9 @@ class Backend:
             # 代码健壮性这一块还是要的
             raise NotImplementedError(f'Backend {backend} not implemented')
 
+    def get_backend(self):
+        return self._type
+
     def __getattr__(self, name):
         return getattr(self._backend, name) # 把对应的调用送到指定后端
 
@@ -30,3 +33,6 @@ xp = Backend()
 
 def set_backend(backend: str):
     xp.set_backend(backend)
+
+def get_backend():
+    return xp.get_backend()
