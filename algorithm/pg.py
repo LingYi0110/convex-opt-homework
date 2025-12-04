@@ -12,4 +12,4 @@ class ProximalGradient(Optimizer):
 
         for p in self.model.parameters():
             p2 = p.data - self.lr * p.grad
-            p.data = prox_l1(p2, self.lam * self.lr)
+            p.data = self.model.prox(p2, self.lam * self.lr)

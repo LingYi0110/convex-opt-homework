@@ -13,6 +13,13 @@ def l2_norm(x):
 def prox_l1(v, lam):
     return xp.sign(v) * xp.maximum(xp.abs(v) - lam, 0)    # 推导看报告吧，这里不写了
 
+# L2范数的近段算子
+def prox_l2(v, lam):
+    norm = l2_norm(v)
+    if norm == 0:
+        return xp.zeros_like(v)
+    return v * xp.maximum(0, 1 - lam / norm)
+
 # L1范数的次梯度
 def l1_subgrad(weight, mode):
         if mode == 'off':

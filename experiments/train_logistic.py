@@ -30,10 +30,10 @@ feature_dim = dataset.X.shape[1]
 
 
 writer = SummaryWriter(log_dir=f'../runs/{name}')
-model = Logistic(feature_dim, lam, norm='l2', subgrad='zero')
+model = Logistic(feature_dim, lam, norm='l1', subgrad='off')
 
-#optimizer = NesterovProximalGradient(model, lr, lam)
-optimizer = GradientDescent(model, lr=lr)
+optimizer = NesterovProximalGradient(model, lr, lam)
+#optimizer = GradientDescent(model, lr=lr)
 #scheduler = StepLR(optimizer, step_size=50, gamma=0.5)
 scheduler = CosineAnnealingLR(optimizer, T_max=epochs, eta_min=1e-6)
 

@@ -21,6 +21,7 @@ class Logistic(BaseModel):
     def loss(self, X, y):
         f = xp.log1p(xp.exp(-y * self.forward(X))).mean()
 
+        # L1是一种特征选择，L2是权重衰减
         if self.norm == 'l1':
             g = self.lam * l1_norm(self.weight.data)
         elif self.norm == 'l2':
@@ -42,3 +43,9 @@ class Logistic(BaseModel):
             grad += self.lam * self.weight.data / l2_norm(self.weight.data)
 
         self.weight.grad = grad
+
+    def prox(self, v, lam):
+        if self.norm == 'l1':
+            return prox_l1(v, lam)
+        else:
+            return prox_l2(v, lam)

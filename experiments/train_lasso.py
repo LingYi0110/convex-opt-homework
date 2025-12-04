@@ -5,7 +5,7 @@ from algorithm.pg import ProximalGradient
 from algorithm.nesterov_pg import NesterovProximalGradient
 from scheduler.StepLR import StepLR
 from scheduler.CosineAnnealingLR import CosineAnnealingLR
-from algorithm.gd import StochasticGradientDescent
+from algorithm.gd import GradientDescent
 import numpy as np
 from tqdm import tqdm
 from tensorboardX import SummaryWriter
@@ -26,9 +26,9 @@ feature_dim = dataset.X.shape[1]
 
 
 writer = SummaryWriter(log_dir=f'../runs/{name}')
-model = LASSO(feature_dim, lam, sub_grad='zero')
+model = LASSO(feature_dim, lam, subgrad='zero')
 optimizer = NesterovProximalGradient(model, lr, lam)
-#optimizer = StochasticGradientDescent(model, lr=lr)
+#optimizer = GradientDescent(model, lr=lr)
 #scheduler = StepLR(optimizer, step_size=50, gamma=0.5)
 #scheduler = CosineAnnealingLR(optimizer, T_max=epochs, eta_min=1e-10)
 

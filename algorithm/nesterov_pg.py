@@ -16,7 +16,7 @@ class NesterovProximalGradient(Optimizer):
 
         for idx, p in enumerate(params):
             p2 = p.data - self.lr * p.grad
-            p3 = prox_l1(p2, self.lam * self.lr)
+            p3 = self.model.prox(p2, self.lam * self.lr)
 
             p.data = p3 + (self.k / (self.k + 3)) * (p3 - self.prev[idx])
             self.prev[idx] = xp.copy(p3)
