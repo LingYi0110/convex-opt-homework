@@ -1,4 +1,4 @@
-from scipy._lib.cobyqa.subsolvers import optim
+
 
 from backend import set_backend, xp
 from dataset import LibSVMDataset, DataLoader
@@ -13,17 +13,17 @@ from tqdm import tqdm
 from tensorboardX import SummaryWriter
 
 
-set_backend('numpy')
+set_backend('cupy')
 
 xp.random.seed(42)
 
 name = 'german.numer_scale'
 lr = 1e-2
 lam = 1e-2
-epochs = 1000
+epochs = 2000
 batch_size = None
 
-dataset = LibSVMDataset('../datasets/classification/german.numer_scale.txt', dtype=np.float32)
+dataset = LibSVMDataset('../datasets/classification/avazu-app.tr', dtype=np.float32)
 dataloader = DataLoader(dataset, batch_size=batch_size)
 
 feature_dim = dataset.X.shape[1]
@@ -33,9 +33,9 @@ writer = SummaryWriter(log_dir=f'../runs/{name}')
 model = Logistic(feature_dim, lam, norm='l1', subgrad='off')
 
 optimizer = NesterovProximalGradient(model, lr, lam)
-#optimizer = GradientDescent(model, lr=lr)
+#optimizer = GradientDescent(model, lr=lr, momentum=0.9)
 #scheduler = StepLR(optimizer, step_size=50, gamma=0.5)
-scheduler = CosineAnnealingLR(optimizer, T_max=epochs, eta_min=1e-6)
+scheduler = CosineAnnealingLR(optimizer, T_max=epochs, eta_min=1e-4)
 
 global_step = 0
 for epoch in range(1, epochs + 1):
