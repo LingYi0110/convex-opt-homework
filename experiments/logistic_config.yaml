@@ -1,0 +1,29 @@
+experiment_name: "lasso_train_1"
+random_seed: 42
+backend: "cupy"
+log_dir: "runs"
+
+epochs: 2000
+
+dataset:
+  path: "datasets/classification/avazu-app.tr"
+  precision: "float32" # float64 or float32
+  batch_size: 256 # null为full batch
+
+logistic_model:
+  lam: 0.01
+  norm: "l1" # l1, l2
+  sub_gradient: "zero"
+
+optimizer:
+  type: "optimizer.GradientDescent"
+  lr: 0.0001
+  #nesterov: false
+  momentum: 0.9
+
+scheduler:
+  type: "scheduler.CosineAnnealingLR"
+  T_max: 2000
+  eta_min: 0.00001
+
+

@@ -4,11 +4,11 @@ from utils import *
 from backend import xp
 
 class LASSO(BaseModel):
-    def __init__(self, input_dim: int, lam: float, subgrad: str = 'off'):
+    def __init__(self, input_dim: int, lam: float, sub_gradient: str = 'off'):
         super().__init__()
         self.weight = Parameter(xp.random.randn(input_dim) * 0.01)
-        self.lam_l1 = lam
-        self.subgrad = subgrad
+        self.lam = lam
+        self.subgrad = sub_gradient
 
     def forward(self, X):
         return X @ self.weight.data
@@ -19,13 +19,13 @@ class LASSO(BaseModel):
         # 最后的结果应该就是选择重要的特征
         residual = self.forward(X) - y
         f = 0.5 * l2_norm(residual)**2
-        g = self.lam_l1 * l1_norm(self.weight.data)
+        g = self.lam * l1_norm(self.weight.data)
         return f + g
 
     def grad(self, X, y):
         # 没有自动求导 :(
         residual = self.forward(X) - y
-        self.weight.grad = X.T @ residual + self.lam_l1 * l1_subgrad(self.weight.data, self.subgrad)
+        self.weight.grad = X.T @ residual + self.lam * l1_subgrad(self.weight.data, self.subgrad)
 
     def prox(self, v, lam):
         return utils.prox_l1(v, lam)

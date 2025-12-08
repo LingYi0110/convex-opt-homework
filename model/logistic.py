@@ -4,12 +4,12 @@ from utils import *
 
 
 class Logistic(BaseModel):
-    def __init__(self, input_dim, lam, norm='l1', subgrad = 'off'):
+    def __init__(self, input_dim, lam, norm='l1', sub_gradient = 'off'):
         super().__init__()
         self.input_dim = input_dim
         self.lam = lam
         self.norm = norm
-        self.subgrad = subgrad
+        self.subgrad = sub_gradient
 
         self.weight = Parameter(xp.random.randn(input_dim) * 0.01)
 

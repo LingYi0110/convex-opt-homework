@@ -1,4 +1,4 @@
-from algorithm.base import Optimizer
+from optimizer.base import Optimizer
 from backend import xp
 
 class GradientDescent(Optimizer):
