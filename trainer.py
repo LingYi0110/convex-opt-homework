@@ -1,4 +1,5 @@
 import importlib
+import os
 from pathlib import Path
 from typing import Any, Dict
 
@@ -31,6 +32,8 @@ class Trainer:
         self._setup_optimizer()
         self._setup_scheduler()
 
+        self._setup_recorder()
+
     def _setup_environment(self):
         backend_name = self.config.get('trainer', {}).get('backend', 'numpy')
         set_backend(backend_name)
@@ -41,6 +44,7 @@ class Trainer:
         self.name = self.config['experiment_name']
         self.log_dir = Path(self.config['log_dir'])
         self.epochs = int(self.config['epochs'])
+        self.save_weights = self.config.get('save_weights', False)
 
     def _setup_dataset(self):
         config = self.config['dataset']
@@ -87,6 +91,30 @@ class Trainer:
         scheduler_class = _import_class(type_str)
         self.scheduler = scheduler_class(self.optimizer, **config)
 
+    def _setup_recorder(self):
+        if self.save_weights:
+            self.save_path = Path(self.config['weights_path'])
+            self.save_path.mkdir(parents=True, exist_ok=True)
+            self.save_dict = {
+                'metadata':{
+                    'name': self.name,
+                    'type': 'lasso' if 'lasso_model' in self.config else 'logistic',
+                    'epochs': 0,
+                    'lr_scheduler': self.config.get('scheduler', None),
+                    'optimizer': self.config.get('optimizer', None)
+                },
+                'weight': []
+            }
+
+    def _record_weights(self, epoch, weight):
+        if self.save_weights:
+            self.save_dict['metadata']['epochs'] = epoch
+            self.save_dict['weight'].append(weight)
+
+    def _save_weights(self):
+        if self.save_weights:
+            xp.savez(self.save_path / f"{self.name}.npz", **self.save_dict)
+
     def train(self):
         writer = SummaryWriter(log_dir=self.log_dir / self.name)
 
@@ -111,6 +139,9 @@ class Trainer:
 
             writer.add_scalar('train/loss_epoch', avg_loss, epoch)
             writer.add_scalar('train/lr', self.optimizer.lr, epoch)
+            self._record_weights(epoch, self.model.weight.data)
+
             #print(f"Epoch {epoch} | loss = {avg_loss:.6f}, lr = {self.optimizer.lr}\n")
 
         writer.close()
+        self._save_weights()

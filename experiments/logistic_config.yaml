@@ -1,29 +1,31 @@
-experiment_name: "lasso_train_1"
+experiment_name: "logistic_train_1"
 random_seed: 42
 backend: "cupy"
 log_dir: "runs"
+save_weights: true
+weights_path: "weights"
 
-epochs: 2000
+epochs: 50
 
 dataset:
   path: "datasets/classification/avazu-app.tr"
   precision: "float32" # float64 or float32
-  batch_size: 256 # null为full batch
+  batch_size: null # null为full batch
 
 logistic_model:
   lam: 0.01
   norm: "l1" # l1, l2
-  sub_gradient: "zero"
+  sub_gradient: "off"
 
 optimizer:
-  type: "optimizer.GradientDescent"
-  lr: 0.0001
-  #nesterov: false
-  momentum: 0.9
+  type: "optimizer.ProximalGradient"
+  lr: 0.1
+  nesterov: true
+  #momentum: 0.9
 
 scheduler:
   type: "scheduler.CosineAnnealingLR"
-  T_max: 2000
-  eta_min: 0.00001
+  T_max: 50
+  eta_min: 0.05
 
 

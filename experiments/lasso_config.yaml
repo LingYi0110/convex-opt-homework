@@ -1,23 +1,20 @@
-experiment_name: "lasso_train_1"
+experiment_name: "train_lasso_1"
 random_seed: 42
 backend: "numpy"
 log_dir: "runs"
+save_weights: true
+weights_path: "weights"
 
-epochs: 2000
+epochs: 200
 
 dataset:
-  path: "datasets/regression/abalone_scale.txt"
+  path: "datasets/regression/bodyfat_scale.txt"
   precision: "float32" # float64 or float32
   batch_size: null # null为full batch
 
 lasso_model:
   lam: 0.01
   sub_gradient: "off" # off, zero, random
-
-# logistic_model:
-#  lam: 0.01
-#  norm: "l1" # l1, l2
-#  sub_gradient: "off"
 
 optimizer:
   type: "optimizer.ProximalGradient"
@@ -26,7 +23,7 @@ optimizer:
 
 scheduler:
   type: "scheduler.CosineAnnealingLR"
-  T_max: 2000
+  T_max: 200
   eta_min: 0.0001
 
 
