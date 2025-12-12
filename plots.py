@@ -100,7 +100,7 @@ def _save_figure(fig: plt.Figure, output_path: Path, fmt: str, dpi: int):
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Generate fixed-point residual plot from saved weights.")
-    parser.add_argument("--weights", type=Path, required=True, help="Path to *.npz weights produced by Trainer")
+    parser.add_argument("--weights", type=Path, default=r'weights/train_lasso_1.npz', help="Path to *.npz weights produced by Trainer")
     parser.add_argument("--output", type=Path, default=None, help="Output path (directory or file stem). Defaults to figures/<run>_fixed_point.png")
     parser.add_argument("--fmt", choices=["png", "pdf", "svg"], default="png", help="Figure format")
     parser.add_argument("--dpi", type=int, default=600, help="Figure DPI for raster outputs")

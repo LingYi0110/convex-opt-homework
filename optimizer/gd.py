@@ -10,5 +10,4 @@ class GradientDescent(Optimizer):
         self.model.grad(X, y)
         # 最原始的梯度下降法
         # 小batch更新就是SDG了
-
         self.model.weight.data -= self.lr * self.model.weight.grad

@@ -109,7 +109,7 @@ class Trainer:
     def _record_weights(self, epoch, weight):
         if self.save_weights:
             self.save_dict['metadata']['epochs'] = epoch
-            self.save_dict['weight'].append(weight)
+            self.save_dict['weight'].append(xp.copy(weight))
 
     def _save_weights(self):
         if self.save_weights:
