@@ -3,11 +3,11 @@ import yaml
 from trainer import Trainer
 
 
-experiment_path = 'experiments'
+experiment_path = r'experiments/lasso_config.yaml'
 
 def train_from_config(config_path):
     print(f'Starting training: {config_path}')
-    with open(yaml_file, "r", encoding="utf-8") as f:
+    with open(config_path, "r", encoding="utf-8") as f:
         cfg = yaml.safe_load(f)
     trainer = Trainer(cfg)
     trainer.train()

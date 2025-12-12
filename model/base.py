@@ -2,15 +2,16 @@ from abc import ABC, abstractmethod
 from backend import xp
 
 
-class Parameter:
+class Weight:
     def __init__(self, data):
         self.data = xp.asarray(data)
         self.grad = xp.zeros_like(self.data)
 
 
 class BaseModel(ABC):
-    def __init__(self):
+    def __init__(self, weight):
         super().__init__()
+        self.weight = Weight(weight)
 
     @abstractmethod
     def forward(self, X):
@@ -23,9 +24,3 @@ class BaseModel(ABC):
     @abstractmethod
     def grad(self, X, y):
         raise NotImplementedError()
-
-    def parameters(self):
-        # 只要是Parameter就yield出来
-        for _, i in self.__dict__.items():
-            if isinstance(i, Parameter):
-                yield i

@@ -1,17 +1,18 @@
 from backend import xp
-from model.base import BaseModel, Parameter
+from model.base import BaseModel, Weight
 from utils import *
 
 
 class Logistic(BaseModel):
-    def __init__(self, input_dim, lam, norm='l1', sub_gradient = 'off'):
-        super().__init__()
+    def __init__(self, input_dim, lam, norm='l1', sub_gradient = 'off', weight=None):
+        if weight is None:
+            weight = xp.random.randn(input_dim) * 0.01
+        super().__init__(weight)
         self.input_dim = input_dim
         self.lam = lam
         self.norm = norm
         self.subgrad = sub_gradient
 
-        self.weight = Parameter(xp.random.randn(input_dim) * 0.01)
 
     def forward(self, X):
         # 越大，倾向于+1类

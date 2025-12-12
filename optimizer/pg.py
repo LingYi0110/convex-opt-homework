@@ -6,25 +6,25 @@ class ProximalGradient(Optimizer):
     def __init__(self, model, lr, nesterov=False):
         super().__init__(model, lr)
         self.lam = model.lam
-        self.nesterov = nesterov
+        self.nesterov = nesterov # FISTA算法
 
-        self._k = 0
-        self._prev = [xp.copy(p.data) for p in model.parameters()]
+        self._k = 1
+        self._prev = [xp.copy(model.weight.data), xp.copy(model.weight.data)]
 
     def step(self, X, y):
-        self.model.grad(X, y)
+        w = self.model.weight
 
         if self.nesterov:
-            params = list(self.model.parameters())
+            y_k = self._prev[1] + (self._k - 2) / (self._k + 1) * (self._prev[1] - self._prev[0])
+            w.data = y_k
+            self.model.grad(X, y)
 
-            for idx, p in enumerate(params):
-                p2 = p.data - self.lr * p.grad
-                p3 = self.model.prox(p2, self.lam * self.lr)
-
-                p.data = p3 + (self._k / (self._k + 3)) * (p3 - self._prev[idx])
-                self._prev[idx] = xp.copy(p3)
+            self._prev[0] = xp.copy(self._prev[1])
+            self._prev[1] = self.model.prox(y_k - self.lr * w.grad, self.lam * self.lr)
+            w.data = self._prev[1]
             self._k += 1
         else:
-            for p in self.model.parameters():
-                p2 = p.data - self.lr * p.grad
-                p.data = self.model.prox(p2, self.lam * self.lr)
+            self.model.grad(X, y)
+            w_2 = w.data - self.lr * w.grad
+            w.data = self.model.prox(w_2, self.lam * self.lr)
+

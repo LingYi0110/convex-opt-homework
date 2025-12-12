@@ -5,7 +5,7 @@ log_dir: "runs"
 save_weights: true
 weights_path: "weights"
 
-epochs: 200
+epochs: 500
 
 dataset:
   path: "datasets/regression/bodyfat_scale.txt"
@@ -14,16 +14,16 @@ dataset:
 
 lasso_model:
   lam: 0.01
-  sub_gradient: "off" # off, zero, random
+  sub_gradient: "zero" # off, zero, random
 
 optimizer:
-  type: "optimizer.ProximalGradient"
+  type: "optimizer.GradientDescent"
   lr: 0.001
-  nesterov: true
+  #nesterov: true
 
 scheduler:
   type: "scheduler.CosineAnnealingLR"
-  T_max: 200
-  eta_min: 0.0001
+  T_max: 500
+  eta_min: 0.001
 
 
