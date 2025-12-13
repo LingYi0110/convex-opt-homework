@@ -4,8 +4,9 @@ backend: "numpy"
 log_dir: "runs"
 save_weights: true
 weights_path: "weights"
+tolerance: 0.07
 
-epochs: 300
+epochs: 50000
 
 dataset:
   path: "datasets/regression/bodyfat_scale.txt"
@@ -13,17 +14,17 @@ dataset:
   batch_size: null # null为full batch
 
 lasso_model:
-  lam: 0.001
+  lam: 0.01
   sub_gradient: "off" # off, zero, random
 
 optimizer:
   type: "optimizer.ProximalGradient"
   lr: 0.001
-  nesterov: true
+  nesterov: false
 
-scheduler:
-  type: "scheduler.CosineAnnealingLR"
-  T_max: 300
+#scheduler:
+  #type: "scheduler.CosineAnnealingLR"
+  #T_max: 500
 
 
 

@@ -8,9 +8,11 @@ from backend import xp, set_backend
 from dataset import LibSVMDataset, DataLoader
 from model.lasso import LASSO
 from model.logistic import Logistic
+from utils import l2_norm
 
 from tensorboardX import SummaryWriter
 from tqdm import tqdm
+
 
 def _import_class(type_str: str):
     module_name, class_name = type_str.rsplit('.', 1)
@@ -45,6 +47,7 @@ class Trainer:
         self.log_dir = Path(self.config['log_dir'])
         self.epochs = int(self.config['epochs'])
         self.save_weights = self.config.get('save_weights', False)
+        self.tolerance = self.config.get('tolerance', None)
 
     def _setup_dataset(self):
         config = self.config['dataset']
@@ -77,14 +80,14 @@ class Trainer:
 
     def _setup_optimizer(self):
         config = dict(self.config["optimizer"])
-        type_str = config.pop("type") # 把type删除，防止传参出错
+        type_str = config.pop("type")  # 把type删除，防止传参出错
         optimizer_class = _import_class(type_str)
         self.optimizer = optimizer_class(self.model, **config)
 
     def _setup_scheduler(self):
         config = self.config.get("scheduler")
         if not config:
-            self.scheduler = None # lr保持不变
+            self.scheduler = None  # lr保持不变
             return
         config = dict(config)
         type_str = config.pop("type")
@@ -96,7 +99,7 @@ class Trainer:
             self.save_path = Path(self.config['weights_path'])
             self.save_path.mkdir(parents=True, exist_ok=True)
             self.save_dict = {
-                'metadata':{
+                'metadata': {
                     'name': self.name,
                     'type': 'lasso' if 'lasso_model' in self.config else 'logistic',
                     'epochs': 0,
@@ -114,6 +117,12 @@ class Trainer:
     def _save_weights(self):
         if self.save_weights:
             xp.savez(self.save_path / f"{self.name}.npz", **self.save_dict)
+
+    def _check_convergence(self):
+        if self.tolerance is None:
+            return False
+        print(l2_norm(self.model.weight.grad))
+        return l2_norm(self.model.weight.grad) < self.tolerance
 
     def train(self):
         writer = SummaryWriter(log_dir=self.log_dir / self.name)
@@ -137,14 +146,16 @@ class Trainer:
                     self.scheduler.set_epoch(epoch)
                     self.scheduler.step(X, y)
 
-                self.model.grad_zero()
+            if self._check_convergence():
+                break
+
             avg_loss = total_loss / len(self.dataloader)
 
             writer.add_scalar('train/loss_epoch', avg_loss, epoch)
             writer.add_scalar('train/lr', self.optimizer.lr, epoch)
             self._record_weights(epoch, self.model.weight.data)
 
-            #print(f"Epoch {epoch} | loss = {avg_loss:.6f}, lr = {self.optimizer.lr}\n")
+            # print(f"Epoch {epoch} | loss = {avg_loss:.6f}, lr = {self.optimizer.lr}\n")
 
         writer.close()
         self._save_weights()

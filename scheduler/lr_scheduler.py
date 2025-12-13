@@ -30,7 +30,7 @@ class CosineAnnealingLR(Scheduler):
 
 
 class BarzilaiBorwein(Scheduler):
-    def __init__(self, optimizer, lr_type='BB1', c1=1e-4, decay=0.5, memory_size=10, lr_min=1e-10, lr_max=1e4):
+    def __init__(self, optimizer, lr_type='BB1', c1=1e-4, decay=0.5, memory_size=5, lr_min=1e-10, lr_max=1e4):
         super().__init__(optimizer)
         self.lr_type = lr_type
         self.c1 = c1
