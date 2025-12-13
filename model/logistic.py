@@ -43,7 +43,8 @@ class Logistic(BaseModel):
         else:
             grad += self.lam * self.weight.data / l2_norm(self.weight.data)
 
-        self.weight.grad = grad
+        self.weight.grad[...] = grad
+        return grad
 
     def prox(self, v, lam):
         if self.norm == 'l1':

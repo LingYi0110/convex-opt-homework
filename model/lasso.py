@@ -28,7 +28,9 @@ class LASSO(BaseModel):
     def grad(self, X, y):
         # 没有自动求导 :(
         residual = self.forward(X) - y
-        self.weight.grad = X.T @ residual + self.lam * l1_subgrad(self.weight.data, self.subgrad)
+        grad = X.T @ residual + self.lam * l1_subgrad(self.weight.data, self.subgrad)
+        self.weight.grad[...] = grad
+        return grad
 
     def prox(self, v, lam):
         return utils.prox_l1(v, lam)

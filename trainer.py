@@ -132,9 +132,12 @@ class Trainer:
                 pbar.set_postfix(loss=float(loss), lr=float(self.optimizer.lr))
                 writer.add_scalar('train/step_loss', float(loss), global_step)
 
-            if self.scheduler is not None:
-                self.scheduler.step()
+                if self.scheduler is not None:
+                    self.scheduler.set_step(global_step)
+                    self.scheduler.set_epoch(epoch)
+                    self.scheduler.step(X, y)
 
+                self.model.grad_zero()
             avg_loss = total_loss / len(self.dataloader)
 
             writer.add_scalar('train/loss_epoch', avg_loss, epoch)

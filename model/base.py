@@ -24,3 +24,6 @@ class BaseModel(ABC):
     @abstractmethod
     def grad(self, X, y):
         raise NotImplementedError()
+
+    def grad_zero(self):
+        self.weight.grad[...] = 0

@@ -14,16 +14,15 @@ dataset:
 
 lasso_model:
   lam: 0.01
-  sub_gradient: "zero" # off, zero, random
+  sub_gradient: "off" # off, zero, random
 
 optimizer:
-  type: "optimizer.GradientDescent"
+  type: "optimizer.ProximalGradient"
   lr: 0.001
-  #nesterov: true
+  nesterov: true
 
 scheduler:
-  type: "scheduler.CosineAnnealingLR"
-  T_max: 300
-  eta_min: 0.001
+  type: "scheduler.BarzilaiBorwein"
+
 
 
