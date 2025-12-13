@@ -13,7 +13,7 @@ dataset:
   batch_size: null # null为full batch
 
 lasso_model:
-  lam: 0.01
+  lam: 0.001
   sub_gradient: "off" # off, zero, random
 
 optimizer:
@@ -22,7 +22,8 @@ optimizer:
   nesterov: true
 
 scheduler:
-  type: "scheduler.BarzilaiBorwein"
+  type: "scheduler.CosineAnnealingLR"
+  T_max: 300
 
 
 

@@ -10,7 +10,7 @@ class StepLR(Scheduler):
         self.gamma = gamma
 
     def step(self, X, y):
-        #每step_size次就会衰减一次
+        # 每step_size次就会衰减一次
         if self.last_epoch % self.step_size == 0 and self.last_epoch != 0:
             self.optimizer.lr *= self.gamma
 
@@ -20,27 +20,23 @@ class CosineAnnealingLR(Scheduler):
         super().__init__(optimizer)
         self.T_max = T_max
         self.eta_min = eta_min
-        self.eta_t = self.optimizer.lr # 取初始lr作为起始点
+        self.eta_t = self.optimizer.lr  # 取初始lr作为起始点
 
     def step(self, X, y):
-        # lr计算
-        # 公式来源于 https://docs.pytorch.org/docs/stable/generated/torch.optim.lr_scheduler.CosineAnnealingLR.html
-        ratio = (1 + math.cos(math.pi * (self.last_epoch + 1) / self.T_max)) / (1 + math.cos(math.pi * self.last_epoch / self.T_max))
-        eta_next = self.eta_min + (self.eta_t - self.eta_min) * ratio
-
+        # 参考了 https://github.com/pytorch/pytorch/blob/v2.9.1/torch/optim/lr_scheduler.py
+        eta_next = self.eta_min + 0.5 * (self.eta_t - self.eta_min) * (
+                    1 + math.cos(math.pi * self.last_epoch / self.T_max))
         self.optimizer.lr = eta_next
-
-        self.eta_t = eta_next
 
 
 class BarzilaiBorwein(Scheduler):
-    def __init__(self, optimizer, lr_type='BB1', c1=1e-4, alpha=1, decay=0.5, memory_size=10, lr_min=1e-10, lr_max=1e4):
+    def __init__(self, optimizer, lr_type='BB1', c1=1e-4, decay=0.5, memory_size=10, lr_min=1e-10, lr_max=1e4):
         super().__init__(optimizer)
         self.lr_type = lr_type
         self.c1 = c1
         self.decay = decay
         self.memory_size = memory_size
-        self.alpha = alpha
+        self.alpha = optimizer.lr
         self.lr_min = lr_min
         self.lr_max = lr_max
 
@@ -67,7 +63,7 @@ class BarzilaiBorwein(Scheduler):
             f2 = self.model.loss(X, y)
             if f2 >= f1:
                 weight[...] = sk
-                self.alpha *= self.decay # 回退
+                self.alpha *= self.decay  # 回退
                 self.model.grad_zero()
                 continue
             else:
