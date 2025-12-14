@@ -8,7 +8,7 @@ weights_path: "weights/logistic_l2"
 epochs: 500
 
 dataset:
-  path: "datasets/classification/a1a"
+  path: "datasets/classification/german.numer_scale.txt"
   precision: "float32" # float64 or float32
   batch_size: null # null为full batch
 

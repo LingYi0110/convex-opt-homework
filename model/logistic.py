@@ -20,7 +20,8 @@ class Logistic(BaseModel):
         return X @ self.weight.data
 
     def loss(self, X, y):
-        f = xp.log1p(xp.exp(-y * self.forward(X))).mean()
+        z = self.forward(X)
+        f = xp.logaddexp(0, -y * z).mean()
 
         # L1是一种特征选择，L2是权重衰减
         if self.norm == 'l1':

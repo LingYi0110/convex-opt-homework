@@ -1,5 +1,20 @@
 from backend import xp
+import numpy as np
 
+def to_numpy(x):
+    if isinstance(x, np.ndarray):
+        return x
+
+    try:
+        import cupy as cp
+        if isinstance(x, cp.ndarray):
+            return x.get()
+        if isinstance(x, cp.generic):
+            return cp.asnumpy(x)
+    except ImportError:
+        pass
+
+    return np.asarray(x)
 
 def l1_norm(x):
     x = xp.asarray(x)

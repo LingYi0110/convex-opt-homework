@@ -1,4 +1,4 @@
-experiment_name: "logistic_l2_train_8"
+experiment_name: "logistic_l2_train_7"
 random_seed: 42
 backend: "cupy"
 log_dir: "runs"

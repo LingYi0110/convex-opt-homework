@@ -109,7 +109,7 @@ class LineSearch(Scheduler):
                 break
             # 判断斜率是否变正
             if left >= 0:
-                self.alpha = self._zoom(alpha0, alpha1, X, y)
+                self.alpha = self._zoom(alpha1, alpha0, X, y)
                 self.optimizer.lr = alpha1
                 break
             # 如果上面三个条件都不满足，说明alpha太小

@@ -6,7 +6,7 @@ save_weights: true
 weights_path: "weights/lasso"
 tolerance: null
 
-epochs: 100 # 太慢了
+epochs: 100 # 这个数据集似乎很难收敛
 
 dataset:
   path: "datasets/regression/log1p.E2006.train"

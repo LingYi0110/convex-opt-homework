@@ -8,7 +8,7 @@ from backend import xp, set_backend, get_backend
 from dataset import LibSVMDataset, DataLoader
 from model.lasso import LASSO
 from model.logistic import Logistic
-from utils import l2_norm
+from utils import l2_norm, to_numpy
 
 from tensorboardX import SummaryWriter
 from tqdm import tqdm
@@ -38,7 +38,7 @@ class Trainer:
         self._setup_recorder()
 
     def _setup_environment(self):
-        backend_name = self.config.get('trainer', {}).get('backend', 'numpy')
+        backend_name = self.config.get('backend', 'numpy')
         set_backend(backend_name)
 
         seed = int(self.config.get('random_seed', 42))
@@ -115,7 +115,7 @@ class Trainer:
     def _record_weights(self, epoch, weight):
         if self.save_weights:
             self.save_dict['metadata']['epochs'] = epoch
-            self.save_dict['weight'].append(xp.copy(weight))
+            self.save_dict['weight'].append(to_numpy(weight).copy())
 
     def _save_weights(self):
         if self.save_weights:
@@ -124,7 +124,6 @@ class Trainer:
     def _check_convergence(self):
         if self.tolerance is None:
             return False
-        print(l2_norm(self.model.weight.grad))
         return l2_norm(self.model.weight.grad) < self.tolerance
 
     def train(self):
@@ -161,6 +160,8 @@ class Trainer:
             self._record_weights(epoch, self.model.weight.data)
 
             # print(f"Epoch {epoch} | loss = {avg_loss:.6f}, lr = {self.optimizer.lr}\n")
-        self.save_dict['metadata']['cpu_time'], self.save_dict['metadata']['gpu_time'] = toc(time_handler)
+        cpu, gpu = toc(time_handler)
+        self.save_dict['metadata']['cpu_time'], self.save_dict['metadata']['gpu_time'] = cpu, gpu
+        print(cpu, gpu)
         writer.close()
         self._save_weights()
