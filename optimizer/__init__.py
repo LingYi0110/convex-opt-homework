@@ -1,2 +1,3 @@
-from .pg import ProximalGradient
-from .gd import GradientDescent
+from .pg import *
+from .gd import *
+from .newton import *

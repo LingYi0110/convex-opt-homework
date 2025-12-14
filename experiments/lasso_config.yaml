@@ -15,11 +15,11 @@ dataset:
 
 lasso_model:
   lam: 0.01
-  sub_gradient: "off" # off, zero, random
+  sub_gradient: "zero" # off, zero, random
 
 optimizer:
-  type: "optimizer.GradientDescent"
-  lr: 0.01
+  type: "optimizer.BFGS"
+  lr: 0.001
   #nesterov: false
 
 scheduler:
