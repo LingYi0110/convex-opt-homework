@@ -3,7 +3,7 @@ import yaml
 from trainer import Trainer
 
 
-experiment_path = r'experiments/logistic/l2'
+experiment_path = r'experiments/logistic/l2/logistic_l2_train_2.yaml'
 
 def train_from_config(config_path):
     print(f'Starting training: {config_path}')
