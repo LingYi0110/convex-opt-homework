@@ -24,8 +24,8 @@ optimizer:
   #momentum: 0.9
 
 scheduler:
-  type: "scheduler.InexactLineSearch"
-  alpha: 1
+  type: "scheduler.LineSearch"
+  #alpha: 1
   #T_max: 50
   #eta_min: 0.05
 
