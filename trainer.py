@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any, Dict
 
 import numpy as np
-from backend import xp, set_backend
+from backend import xp, set_backend, get_backend
 from dataset import LibSVMDataset, DataLoader
 from model.lasso import LASSO
 from model.logistic import Logistic
@@ -13,6 +13,7 @@ from utils import l2_norm
 from tensorboardX import SummaryWriter
 from tqdm import tqdm
 
+from time_record import tic, toc
 
 def _import_class(type_str: str):
     module_name, class_name = type_str.rsplit('.', 1)
@@ -104,7 +105,9 @@ class Trainer:
                     'type': 'lasso' if 'lasso_model' in self.config else 'logistic',
                     'epochs': 0,
                     'lr_scheduler': self.config.get('scheduler', None),
-                    'optimizer': self.config.get('optimizer', None)
+                    'optimizer': self.config.get('optimizer', None),
+                    'cpu_time': 0,
+                    'gpu_time': 0
                 },
                 'weight': []
             }
@@ -125,6 +128,7 @@ class Trainer:
         return l2_norm(self.model.weight.grad) < self.tolerance
 
     def train(self):
+        time_handler = tic(get_backend() == 'cupy')
         writer = SummaryWriter(log_dir=self.log_dir / self.name)
 
         global_step = 0
@@ -137,7 +141,7 @@ class Trainer:
 
                 total_loss += loss.item()
                 global_step += 1
-                self.optimizer.step(X, y)
+
                 pbar.set_postfix(loss=float(loss), lr=float(self.optimizer.lr))
                 writer.add_scalar('train/step_loss', float(loss), global_step)
 
@@ -146,6 +150,7 @@ class Trainer:
                     self.scheduler.set_epoch(epoch)
                     self.scheduler.step(X, y)
 
+                self.optimizer.step(X, y)
             if self._check_convergence():
                 break
 
@@ -156,6 +161,6 @@ class Trainer:
             self._record_weights(epoch, self.model.weight.data)
 
             # print(f"Epoch {epoch} | loss = {avg_loss:.6f}, lr = {self.optimizer.lr}\n")
-
+        self.save_dict['metadata']['cpu_time'], self.save_dict['metadata']['gpu_time'] = toc(time_handler)
         writer.close()
         self._save_weights()

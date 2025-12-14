@@ -1,0 +1,28 @@
+experiment_name: "lasso_train_1"
+random_seed: 42
+backend: "numpy"
+log_dir: "runs"
+save_weights: true
+weights_path: "weights/lasso"
+tolerance: null
+
+epochs: 500
+
+dataset:
+  path: "datasets/regression/bodyfat_scale.txt"
+  precision: "float32" # float64 or float32
+  batch_size: null # null为full batch
+
+lasso_model:
+  lam: 0.01
+  sub_gradient: "off" # off, zero, random
+
+optimizer:
+  type: "optimizer.ProximalGradient"
+  lr: 0.001
+  nesterov: false
+
+scheduler: null
+
+
+

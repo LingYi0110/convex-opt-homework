@@ -1,0 +1,27 @@
+experiment_name: "logistic_l1_train_2"
+random_seed: 42
+backend: "numpy"
+log_dir: "runs"
+save_weights: true
+weights_path: "weights/logistic_l1"
+
+epochs: 500
+
+dataset:
+  path: "datasets/classification/a1a"
+  precision: "float32" # float64 or float32
+  batch_size: null # null为full batch
+
+logistic_model:
+  lam: 0.01
+  norm: "l1" # l1, l2
+  sub_gradient: "off"
+
+optimizer:
+  type: "optimizer.ProximalGradient"
+  lr: 0.01
+  nesterov: true
+
+scheduler: null
+
+

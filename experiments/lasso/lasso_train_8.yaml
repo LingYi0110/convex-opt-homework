@@ -1,0 +1,30 @@
+experiment_name: "lasso_train_8"
+random_seed: 42
+backend: "cupy"
+log_dir: "runs"
+save_weights: true
+weights_path: "weights/lasso"
+tolerance: null
+
+epochs: 100 # 太慢了
+
+dataset:
+  path: "datasets/regression/log1p.E2006.train"
+  precision: "float32" # float64 or float32
+  batch_size: 64 # null为full batch
+
+lasso_model:
+  lam: 0.01
+  sub_gradient: "zero" # off, zero, random
+
+optimizer:
+  type: "optimizer.GradientDescent"
+  lr: 0.000001
+
+scheduler:
+  type: "scheduler.CosineAnnealingLR"
+  T_max: 100
+  eta_min: 0.0000001
+
+
+

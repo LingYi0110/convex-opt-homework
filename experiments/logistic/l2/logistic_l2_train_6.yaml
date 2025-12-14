@@ -1,14 +1,13 @@
-experiment_name: "logistic_train_1"
+experiment_name: "logistic_l2_train_6"
 random_seed: 42
 backend: "numpy"
 log_dir: "runs"
 save_weights: true
-weights_path: "weights"
+weights_path: "weights/logistic_l2"
 
-epochs: 50
-
+epochs: 20 # 20步就收敛了...
 dataset:
-  path: "datasets/classification/german.numer_scale.txt"
+  path: "datasets/classification/a1a"
   precision: "float32" # float64 or float32
   batch_size: null # null为full batch
 
@@ -18,15 +17,13 @@ logistic_model:
   sub_gradient: "off"
 
 optimizer:
-  type: "optimizer.GradientDescent"
-  lr: 0.1
-  #nesterov: true
-  #momentum: 0.9
+  type: "optimizer.ProximalGradient"
+  lr: 0.01
+  nesterov: true
 
 scheduler:
   type: "scheduler.LineSearch"
-  #alpha: 1
-  #T_max: 50
-  #eta_min: 0.05
+  c1: 0.0001
+  c2: 0.9
 
 

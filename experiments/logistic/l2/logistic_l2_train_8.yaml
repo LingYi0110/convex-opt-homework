@@ -1,0 +1,25 @@
+experiment_name: "logistic_l2_train_8"
+random_seed: 42
+backend: "cupy"
+log_dir: "runs"
+save_weights: true
+weights_path: "weights/logistic_l2"
+
+epochs: 100
+dataset:
+  path: "datasets/classification/avazu-app.tr"
+  precision: "float32" # float64 or float32
+  batch_size: 4096 # 这个数据集太大了
+
+logistic_model:
+  lam: 0.01
+  norm: "l2" # l1, l2
+  sub_gradient: "off"
+
+optimizer:
+  type: "optimizer.GradientDescent"
+  lr: 0.01
+
+scheduler: null
+
+

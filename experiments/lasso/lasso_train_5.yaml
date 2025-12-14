@@ -1,12 +1,12 @@
-experiment_name: "train_lasso_1"
+experiment_name: "lasso_train_5"
 random_seed: 42
 backend: "numpy"
 log_dir: "runs"
 save_weights: true
-weights_path: "weights"
-tolerance: 0.07
+weights_path: "weights/lasso"
+tolerance: null
 
-epochs: 50000
+epochs: 500
 
 dataset:
   path: "datasets/regression/bodyfat_scale.txt"
@@ -18,13 +18,16 @@ lasso_model:
   sub_gradient: "zero" # off, zero, random
 
 optimizer:
-  type: "optimizer.BFGS"
+  type: "optimizer.GradientDescent"
   lr: 0.001
-  #nesterov: false
 
 scheduler:
-  type: "scheduler.LineSearch"
-  #T_max: 500
+  type: "scheduler.BarzilaiBorwein"
+  c1: 0.0001
+  decay: 0.5
+  memory_size: 5
+  lr_min: 0.0000000001
+  lr_max: 10000
 
 
 

@@ -1,0 +1,28 @@
+experiment_name: "logistic_l2_train_7"
+random_seed: 42
+backend: "numpy"
+log_dir: "runs"
+save_weights: true
+weights_path: "weights/logistic_l2"
+
+epochs: 20 # 20步就收敛了...
+dataset:
+  path: "datasets/classification/a1a"
+  precision: "float32" # float64 or float32
+  batch_size: null # null为full batch
+
+logistic_model:
+  lam: 0.01
+  norm: "l2" # l1, l2
+  sub_gradient: "off"
+
+optimizer:
+  type: "optimizer.BFGS"
+  lr: 0.01
+
+scheduler:
+  type: "scheduler.LineSearch"
+  c1: 0.0001
+  c2: 0.9
+
+

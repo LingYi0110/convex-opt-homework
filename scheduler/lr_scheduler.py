@@ -91,6 +91,7 @@ class LineSearch(Scheduler):
 
         v = self.model.loss(X, y)
         v_grad = self.model.grad(X, y)
+
         while True:
             # 判断Armijo条件
             left = self._phi(alpha1, weight, -v_grad, X, y)
@@ -116,7 +117,7 @@ class LineSearch(Scheduler):
             alpha1 *= 2
 
 class BarzilaiBorwein(Scheduler):
-    def __init__(self, optimizer, lr_type='BB1', c1=1e-4, decay=0.5, memory_size=5, lr_min=1e-10, lr_max=1e4):
+    def __init__(self, optimizer, lr_type='BB1', c1=1e-4, decay=0.5, memory_size=5, lr_min=1e-10, lr_max=1e4, max_iter=2000):
         super().__init__(optimizer)
         self.lr_type = lr_type
         self.c1 = c1
@@ -125,6 +126,7 @@ class BarzilaiBorwein(Scheduler):
         self.alpha = optimizer.lr
         self.lr_min = lr_min
         self.lr_max = lr_max
+        self.max_iter = max_iter
 
         self.model = self.optimizer.model
         self._max_val = float('-inf')
@@ -143,7 +145,7 @@ class BarzilaiBorwein(Scheduler):
         self.model.grad(X, y)
         v1 = self._max_val - self.c1 * self.alpha * grad.T @ grad
 
-        while True:
+        for i in range(self.max_iter):
             self.model.grad(X, y)
             weight -= self.alpha * grad
             v2 = self.model.loss(X, y)
