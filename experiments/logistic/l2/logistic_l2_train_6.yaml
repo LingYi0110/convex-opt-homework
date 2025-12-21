@@ -5,7 +5,7 @@ log_dir: "runs"
 save_weights: true
 weights_path: "weights/logistic_l2"
 
-epochs: 20 # 20步就收敛了...
+epochs: 500
 dataset:
   path: "datasets/classification/german.numer_scale.txt"
   precision: "float32" # float64 or float32
@@ -19,11 +19,13 @@ logistic_model:
 optimizer:
   type: "optimizer.ProximalGradient"
   lr: 0.01
-  nesterov: true
+  nesterov: false
 
 scheduler:
   type: "scheduler.LineSearch"
   c1: 0.0001
   c2: 0.9
+  max_iter: 20
+  fallback_lr: 0.0000000001
 
 

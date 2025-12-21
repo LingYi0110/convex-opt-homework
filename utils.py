@@ -1,5 +1,23 @@
-from backend import xp
+from backend import xp, get_backend
 import numpy as np
+from scipy.special import expit as np_expit
+
+
+def sigmoid(x):
+    if isinstance(x, np.ndarray):
+        return np_expit(x)
+
+    try:
+        import cupy as cp
+        from cupyx.scipy.special import expit as cp_expit
+        if isinstance(x, cp.ndarray):
+            return cp_expit(x)
+        else:
+            x_np = np.asarray(x)
+            return np_expit(x_np)
+    except ImportError:
+        raise RuntimeError("Cupy is not installed, cannot compute sigmoid for non-numpy arrays.")
+
 
 def to_numpy(x):
     if isinstance(x, np.ndarray):

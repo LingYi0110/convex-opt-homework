@@ -36,7 +36,8 @@ class Logistic(BaseModel):
     def grad(self, X, y):
         m = X.shape[0]
 
-        tmp = (-y / (1 + xp.exp(y * self.forward(X)))) / m
+        # 线搜索的时候这个地方老是数值溢出，用了一个稳定的sigmoid函数
+        tmp = (-y * sigmoid(-y * self.forward(X))) / m
         grad = X.T @ tmp
 
         if self.norm == 'l1':

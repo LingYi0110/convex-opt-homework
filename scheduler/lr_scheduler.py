@@ -30,12 +30,16 @@ class CosineAnnealingLR(Scheduler):
 
 
 class LineSearch(Scheduler):
-    def __init__(self, optimizer, c1=1e-4, c2=0.9):
+    def __init__(self, optimizer, c1=1e-4, c2=0.9, max_iter=20, fallback_lr=1e-10):
         super().__init__(optimizer)
         self.alpha = optimizer.lr
         self.c1 = c1
         self.c2 = c2
+        self.max_iter = max_iter
+        self.fallback_lr = fallback_lr
 
+        self.last_alpha = 0
+        self.last_v = float('inf')
         self.model = self.optimizer.model
 
     def _phi(self, alpha, weight, pk, X, y):
@@ -56,11 +60,14 @@ class LineSearch(Scheduler):
         weight = self.optimizer.model.weight.data
         v = self.model.loss(X, y)
         v_grad = self.model.grad(X, y)
-        while True:
+
+        i = 0
+        for i in range(self.max_iter):
             a_star = (a_min + a_max) / 2
             left = self._phi(a_star, weight, -v_grad, X, y)
             right = v + self.c1 * a_star * v_grad.T @ -v_grad
-            if left >= right:
+            last_phi = self._phi(self.last_alpha, weight, -v_grad, X, y)
+            if left >= right and left >= last_phi:
                 a_max = a_star
                 continue
 
@@ -74,6 +81,10 @@ class LineSearch(Scheduler):
                 continue
 
             a_min = a_star
+            self.last_alpha = a_star
+        if i == self.max_iter - 1:
+            a_star = self.fallback_lr
+
         return a_star
 
 
@@ -92,11 +103,13 @@ class LineSearch(Scheduler):
         v = self.model.loss(X, y)
         v_grad = self.model.grad(X, y)
 
-        while True:
+        i = 0
+        for i in range(self.max_iter):
             # 判断Armijo条件
             left = self._phi(alpha1, weight, -v_grad, X, y)
             right = v + self.c1 * alpha1 * v_grad.T @ -v_grad
-            if left >= right:
+
+            if left >= right or v > self.last_v:
                 self.alpha = self._zoom(alpha0, alpha1, X, y)
                 self.optimizer.lr = alpha1
                 break
@@ -115,9 +128,14 @@ class LineSearch(Scheduler):
             # 如果上面三个条件都不满足，说明alpha太小
             alpha0 = alpha1
             alpha1 *= 2
+        if i == self.max_iter - 1:
+            self.optimizer.lr = self.fallback_lr
+
+        self.last_v = v
+
 
 class BarzilaiBorwein(Scheduler):
-    def __init__(self, optimizer, lr_type='BB1', c1=1e-4, decay=0.5, memory_size=5, lr_min=1e-10, lr_max=1e4, max_iter=2000):
+    def __init__(self, optimizer, lr_type='BB1', c1=1e-4, decay=0.5, memory_size=5, lr_min=1e-10, lr_max=1e4, max_iter=20):
         super().__init__(optimizer)
         self.lr_type = lr_type
         self.c1 = c1
@@ -167,6 +185,8 @@ class BarzilaiBorwein(Scheduler):
         elif self.lr_type == 'BB2':
             self.alpha = (sk.T @ sk) / (sk.T @ yk)
 
+        if not math.isfinite(self.alpha):
+            self.alpha = self.lr_min
         # 对步长进行限制
         self.alpha = max(min(self.alpha, self.lr_max), self.lr_min)
 

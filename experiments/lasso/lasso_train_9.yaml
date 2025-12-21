@@ -1,4 +1,4 @@
-experiment_name: "lasso_train_4"
+experiment_name: "lasso_train_9"
 random_seed: 42
 backend: "numpy"
 log_dir: "runs"
@@ -6,7 +6,7 @@ save_weights: true
 weights_path: "weights/lasso"
 tolerance: null
 
-epochs: 500
+epochs: 280
 
 dataset:
   path: "datasets/regression/bodyfat_scale.txt"
@@ -23,12 +23,11 @@ optimizer:
   nesterov: false
 
 scheduler:
-  type: "scheduler.BarzilaiBorwein"
+  type: "scheduler.LineSearch"
   c1: 0.0001
-  decay: 0.5
-  memory_size: 5
-  lr_min: 0.0000000001
-  lr_max: 10000
+  c2: 0.9
+  max_iter: 20
+  fallback_lr: 0.0000000001
 
 
 

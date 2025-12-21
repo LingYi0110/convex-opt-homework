@@ -14,7 +14,7 @@ dataset:
 logistic_model:
   lam: 0.01
   norm: "l2" # l1, l2
-  sub_gradient: "off"
+  sub_gradient: "zero"
 
 optimizer:
   type: "optimizer.GradientDescent"

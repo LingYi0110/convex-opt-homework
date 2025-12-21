@@ -5,7 +5,7 @@ log_dir: "runs"
 save_weights: true
 weights_path: "weights/logistic_l2"
 
-epochs: 100
+epochs: 500
 
 dataset:
   path: "datasets/classification/german.numer_scale.txt"
@@ -15,7 +15,7 @@ dataset:
 logistic_model:
   lam: 0.01
   norm: "l2" # l1, l2
-  sub_gradient: "off"
+  sub_gradient: "zero"
 
 optimizer:
   type: "optimizer.GradientDescent"
